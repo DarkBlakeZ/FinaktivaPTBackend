@@ -1,0 +1,391 @@
+USE [master]
+GO
+/****** Object:  Database [Finaktiva]    Script Date: 25/02/2022 10:38:55 a. m. ******/
+CREATE DATABASE [Finaktiva]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'Finaktiva', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\Finaktiva.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'Finaktiva_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\Finaktiva_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT
+GO
+ALTER DATABASE [Finaktiva] SET COMPATIBILITY_LEVEL = 150
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [Finaktiva].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [Finaktiva] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [Finaktiva] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [Finaktiva] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [Finaktiva] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [Finaktiva] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [Finaktiva] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [Finaktiva] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [Finaktiva] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [Finaktiva] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [Finaktiva] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [Finaktiva] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [Finaktiva] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [Finaktiva] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [Finaktiva] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [Finaktiva] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [Finaktiva] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [Finaktiva] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [Finaktiva] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [Finaktiva] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [Finaktiva] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [Finaktiva] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [Finaktiva] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [Finaktiva] SET RECOVERY FULL 
+GO
+ALTER DATABASE [Finaktiva] SET  MULTI_USER 
+GO
+ALTER DATABASE [Finaktiva] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [Finaktiva] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [Finaktiva] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [Finaktiva] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [Finaktiva] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [Finaktiva] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'Finaktiva', N'ON'
+GO
+ALTER DATABASE [Finaktiva] SET QUERY_STORE = OFF
+GO
+USE [Finaktiva]
+GO
+/****** Object:  Table [dbo].[roles]    Script Date: 25/02/2022 10:38:55 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[roles](
+	[id] [bigint] IDENTITY(1,1) NOT NULL,
+	[rol] [varchar](30) NOT NULL,
+ CONSTRAINT [PK_roles] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[usuarios]    Script Date: 25/02/2022 10:38:55 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[usuarios](
+	[id] [bigint] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](50) NOT NULL,
+	[username] [varchar](50) NOT NULL,
+	[password] [varbinary](50) NOT NULL,
+	[rol] [bigint] NOT NULL,
+	[fechaCreacion] [datetime] NOT NULL,
+	[fechaModificacion] [datetime] NULL,
+ CONSTRAINT [PK_usuarios] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET IDENTITY_INSERT [dbo].[roles] ON 
+GO
+INSERT [dbo].[roles] ([id], [rol]) VALUES (1, N'Administrador')
+GO
+INSERT [dbo].[roles] ([id], [rol]) VALUES (2, N'Operativo')
+GO
+SET IDENTITY_INSERT [dbo].[roles] OFF
+GO
+SET IDENTITY_INSERT [dbo].[usuarios] ON 
+GO
+INSERT [dbo].[usuarios] ([id], [nombre], [username], [password], [rol], [fechaCreacion], [fechaModificacion]) VALUES (1, N'David', N'Darkan1', 0x31393231, 1, CAST(N'2022-02-23T13:10:52.927' AS DateTime), CAST(N'2022-02-23T00:00:00.000' AS DateTime))
+GO
+SET IDENTITY_INSERT [dbo].[usuarios] OFF
+GO
+ALTER TABLE [dbo].[usuarios] ADD  CONSTRAINT [DF_usuarios_fechaCreacion]  DEFAULT (dateadd(hour,(-5),getdate())) FOR [fechaCreacion]
+GO
+ALTER TABLE [dbo].[usuarios] ADD  CONSTRAINT [DF_usuarios_fechaModificacion]  DEFAULT (dateadd(hour,(-5),getdate())) FOR [fechaModificacion]
+GO
+ALTER TABLE [dbo].[usuarios]  WITH CHECK ADD FOREIGN KEY([rol])
+REFERENCES [dbo].[roles] ([id])
+GO
+/****** Object:  StoredProcedure [dbo].[spAuthLogin]    Script Date: 25/02/2022 10:38:55 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create   proc [dbo].[spAuthLogin]
+	@username varchar(50),
+	@password varchar(50),
+	@mensaje varchar(100) output,
+	@log bit output
+as
+BEGIN
+	declare @idUser bigint
+
+	select @idUser = id from usuarios where username=@username and [password]=CONVERT(varbinary(50), @password)
+	
+	if (@idUser is null)
+	BEGIN
+		set @mensaje = 'Usuario y/o contraseña incorrecto'
+		set @log = 0
+	END
+	ELSE
+	BEGIN
+		select id,nombre, username, rol as idRol from usuarios where id=@idUser
+		
+		set @mensaje = 'Usuario logeado exitosamente'
+		set @log = 1
+	END
+
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[spCreateUser]    Script Date: 25/02/2022 10:38:55 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   proc [dbo].[spCreateUser]
+	@nombre varchar(50),
+	@username varchar(50),
+	@password varchar(MAX),
+	@rol bigint,
+	@idUsuario bigint,
+	@mensaje varchar(100) output,
+	@log bit output
+as
+SET XACT_ABORT ON;
+set nocount on;
+BEGIN TRY
+    BEGIN TRANSACTION;
+	declare @rolUser bigint
+
+	select @rolUser=rol from usuarios where id=@idUsuario 
+
+	if(@rolUser = 1)
+	BEGIN
+		if exists (select id from usuarios where username=@username)
+		begin
+			set @mensaje='Nombre de usuario ya existe!'
+			set @log=0
+		end
+		else
+		begin
+			insert into usuarios(
+			Nombre,
+			Username,
+			[password],
+			rol)
+			VALUES(
+			@nombre,
+			@username,
+			CONVERT(varbinary(50), @password),
+			@rol)
+
+			set @mensaje='Usuario Creado Con Exito!'
+			set @log=1
+		end
+	END
+	ELSE
+	BEGIN
+		set @mensaje='Su Rol no tiene permitido realizar esta funcion!'
+		set @log=0
+	END
+
+	COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+
+    IF (XACT_STATE()) = -1
+    BEGIN
+        
+        set @mensaje=ERROR_MESSAGE() 
+		set @log=0
+
+        ROLLBACK TRANSACTION;
+    END;
+
+END CATCH;
+GO
+/****** Object:  StoredProcedure [dbo].[spDeleteUser]    Script Date: 25/02/2022 10:38:55 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   proc [dbo].[spDeleteUser]
+@id bigint,
+@idUsuario bigint,
+@mensaje varchar(100) output,
+@log bit output
+as
+SET XACT_ABORT ON;
+set nocount on;
+BEGIN TRY
+    BEGIN TRANSACTION;
+	declare @rolUser bigint
+
+	select @rolUser=rol from usuarios where id=@idUsuario 
+
+	if(@rolUser = 1)
+	BEGIN
+		delete from usuarios where id=@id
+
+		set @mensaje='Usuario Eliminado con exito!'
+		set @log=1
+	END
+	ELSE
+	BEGIN
+		set @mensaje='Su Rol no tiene permitido realizar esta funcion!'
+		set @log=0
+	END
+	
+	COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+
+    IF (XACT_STATE()) = -1
+    BEGIN
+        
+        set @mensaje=ERROR_MESSAGE() 
+		set @log=0
+
+        ROLLBACK TRANSACTION;
+    END;
+
+END CATCH;
+GO
+/****** Object:  StoredProcedure [dbo].[spGetUsers]    Script Date: 25/02/2022 10:38:55 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   proc [dbo].[spGetUsers]
+@id bigint = 0
+as
+BEGIN
+
+	if @id <> 0
+	BEGIN
+		select u.id, nombre, username, u.rol as idRol, r.rol, u.fechaCreacion, u.fechaModificacion from usuarios u 
+		inner join roles r
+		on r.id = u.rol
+		where u.id=@id
+	END
+	if @id = 0
+	BEGIN
+		select u.id, nombre, username, u.rol as idRol, r.rol, u.fechaCreacion, u.fechaModificacion from usuarios u 
+		inner join roles r
+		on r.id = u.rol
+	END
+	
+END
+GO
+/****** Object:  StoredProcedure [dbo].[spUpdateUser]    Script Date: 25/02/2022 10:38:55 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   proc [dbo].[spUpdateUser]
+	@id bigint,
+	@nombre varchar(50),
+	@username varchar(50),
+	@password varchar(MAX),
+	@rol bigint,
+	@idUsuario bigint,
+	@mensaje varchar(100) output,
+	@log bit out
+as
+SET XACT_ABORT ON;
+set nocount on;
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+	declare @rolUser bigint
+
+	select @rolUser=rol from usuarios where id=@idUsuario 
+
+	if(@rolUser = 1)
+	BEGIN
+		if exists (select top 1 id from usuarios where id=@id)
+		BEGIN
+			if not exists(select top 1 username from usuarios where username=@username)
+			BEGIN
+				Update usuarios
+				set Nombre=@nombre, 
+					username=@username,
+					[password]=CONVERT(varbinary(50), @password),
+					rol=@rol,
+					fechaModificacion=(dateadd(hour,(-5),getdate()))
+				where id=@id
+
+				set @mensaje = 'Cliente Actualizado con exito!'
+				set @log = 1
+			END
+			ELSE
+			BEGIN
+				set @mensaje = 'El nombre de usuario al que va ha actualizar ya existe!'
+				set @log = 0
+			END
+			
+			END
+		ELSE
+			BEGIN
+				set @mensaje = 'Cliente no existe en la base de datos!'
+				set @log = 0
+			END
+		END
+	ELSE
+	BEGIN
+		set @mensaje='Su Rol no tiene permitido realizar esta funcion!'
+		set @log=0
+	END
+
+	
+
+	COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+
+    IF (XACT_STATE()) = -1
+    BEGIN
+        
+        set @mensaje=ERROR_MESSAGE() 
+		set @log=0
+
+        ROLLBACK TRANSACTION;
+    END;
+
+END CATCH;
+GO
+USE [master]
+GO
+ALTER DATABASE [Finaktiva] SET  READ_WRITE 
+GO
