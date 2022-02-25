@@ -56,7 +56,7 @@ namespace FinaktivaPT.Dao
             return response;
         }
 
-        public async Task<respuesta> createUser(CUUsuarios user, int idUser)
+        public async Task<respuesta> createUser(CCUsuarios user, int idUser)
         {
             SqlConnection sql = new SqlConnection(_connectionStrings);
             SqlCommand cmd = new SqlCommand("spCreateUser", sql);

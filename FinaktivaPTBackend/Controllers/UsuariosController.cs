@@ -41,7 +41,7 @@ namespace FinaktivaPT.Controllers
         }
 
         [HttpPost]
-        public async Task<respuesta> createUser(CUUsuarios user)
+        public async Task<respuesta> createUser(CCUsuarios user)
         {
             try
             {
