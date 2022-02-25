@@ -12,7 +12,13 @@ namespace FinaktivaPT.Models
         public DateTime FechaCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
     }
-
+    public class CCUsuarios
+    {
+        public string Nombre { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public long Rol { get; set; }
+    }
     public class CUUsuarios
     {
         public long Id { get; set; }
