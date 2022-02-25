@@ -75,12 +75,12 @@ namespace FinaktivaPT
 
                 options.SwaggerDoc(groupName, new OpenApiInfo
                 {
-                    Title = $"Foo {groupName}",
+                    Title = $"FinaktivaPT API {groupName}",
                     Version = groupName,
-                    Description = "Foo API",
+                    Description = "FinaktivaPT API Backend",
                     Contact = new OpenApiContact
                     {
-                        Name = "Foo Company",
+                        Name = "Finaktiva",
                         Email = string.Empty,
                         Url = new Uri("https://foo.com/"),
                     }
@@ -98,7 +98,7 @@ namespace FinaktivaPT
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Foo API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FinaktivaPT API V1");
             });
             //app.UseSwagger();
             //app.UseSwaggerUI();
