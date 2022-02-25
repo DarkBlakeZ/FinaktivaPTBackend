@@ -1,4 +1,4 @@
-using FinaktivaPT.Authentificaticon;
+using FinaktivaPT.Authentification;
 using FinaktivaPT.Dao;
 using FinaktivaPT.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
